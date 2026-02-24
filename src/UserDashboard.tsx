@@ -169,53 +169,243 @@ const handleResetFilter = useCallback(() => {
     setCounter(prev => prev + 1);
   }, []);
 
+  const totalUsers = fullData.length;
+  const visibleUsers = filteredUsers.length;
+  const isFilterActive = filter.trim().length > 0;
+
   // Renderizado condicional para estados de carga/error
   if (loading) {
-    return <div>Cargando usuarios...</div>;
+    const skeletonItems = Array.from({ length: 6 }, (_, i) => i);
+
+    return (
+      <div className="dashboard">
+        <div className="dashboard__container">
+          <header className="dashboard__header">
+            <h1 className="dashboard__title">Dashboard de usuarios</h1>
+            <p className="dashboard__subtitle">
+              Administra y explora tu directorio de usuarios con un layout SaaS limpio, accesible y responsive.
+            </p>
+          </header>
+
+          <section className="dashboard__metrics" aria-label="Métricas">
+            <div className="card metric">
+              <div className="metric__label">Contador</div>
+              <div className="metric__value">{counter}</div>
+              <div className="metric__hint">Acción rápida para validar interacción</div>
+            </div>
+            <div className="card metric">
+              <div className="metric__label">Usuarios</div>
+              <div className="metric__value">—</div>
+              <div className="metric__hint">Cargando datos…</div>
+            </div>
+            <div className="card metric">
+              <div className="metric__label">Total caracteres (nombres)</div>
+              <div className="metric__value">—</div>
+              <div className="metric__hint">Se calcula sobre resultados visibles</div>
+            </div>
+          </section>
+
+          <section className="card dashboard__controls" aria-label="Filtros">
+            <div className="card__header">
+              <h2 className="card__title">Filtros</h2>
+              <p className="card__subtitle">Refina resultados por nombre.</p>
+            </div>
+            <div className="card__body">
+              <div className="filters">
+                <div className="filters__field">
+                  <label className="filters__label" htmlFor="user-filter">
+                    Buscar por nombre
+                  </label>
+                  <input
+                    id="user-filter"
+                    className="input"
+                    type="search"
+                    placeholder="Ej. Leanne"
+                    value={filter}
+                    onChange={handleFilterChange}
+                    aria-label="Filtrar usuarios por nombre"
+                    disabled
+                  />
+                </div>
+
+                <button className="button button--ghost" onClick={handleResetFilter} type="button" disabled>
+                  Reset
+                </button>
+
+                <button className="button button--primary" onClick={handleIncrementCounter} type="button">
+                  +1 contador
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section className="card" aria-label="Usuarios" aria-busy="true">
+            <div className="card__header">
+              <h2 className="card__title">Usuarios</h2>
+              <p className="card__subtitle">Cargando listado…</p>
+            </div>
+
+            <div role="status" aria-live="polite">
+              <div className="user-list">
+                {skeletonItems.map((i) => (
+                  <div className="skeleton-row" key={i}>
+                    <div className="skeleton skeleton-circle" aria-hidden="true" />
+                    <div className="skeleton-lines" aria-hidden="true">
+                      <div className="skeleton skeleton-line" />
+                      <div className="skeleton skeleton-line skeleton-line--short" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div style={{ color: 'red' }}>
-        Error: {error}
-        <button onClick={() => window.location.reload()}>Reintentar</button>
+      <div className="dashboard">
+        <div className="dashboard__container">
+          <header className="dashboard__header">
+            <h1 className="dashboard__title">Dashboard de usuarios</h1>
+            <p className="dashboard__subtitle">
+              Hubo un problema cargando los datos. Puedes reintentar sin perder el contexto visual del dashboard.
+            </p>
+          </header>
+
+          <section className="dashboard__metrics" aria-label="Métricas">
+            <div className="card metric">
+              <div className="metric__label">Contador</div>
+              <div className="metric__value">{counter}</div>
+              <div className="metric__hint">Disponible incluso ante errores de red</div>
+            </div>
+            <div className="card metric">
+              <div className="metric__label">Usuarios</div>
+              <div className="metric__value">—</div>
+              <div className="metric__hint">No disponible</div>
+            </div>
+            <div className="card metric">
+              <div className="metric__label">Total caracteres (nombres)</div>
+              <div className="metric__value">—</div>
+              <div className="metric__hint">No disponible</div>
+            </div>
+          </section>
+
+          <section className="card card--danger" role="alert" aria-label="Error">
+            <div className="card__header">
+              <h2 className="card__title">No se pudo cargar el dashboard</h2>
+              <p className="card__subtitle">Error: {error}</p>
+            </div>
+            <div className="card__body">
+              <button className="button button--primary" onClick={() => window.location.reload()} type="button">
+                Reintentar
+              </button>
+            </div>
+          </section>
+        </div>
       </div>
     );
   }
 
 
   return (
-    <div>
-      <h1>Dashboard de Usuarios</h1>
-      
-      {/* Contador con tipado implícito en evento */}
-      <p>
-        Contador: {counter} 
-        <button onClick={handleIncrementCounter}>+1</button>
-      </p>
-      
-      <input
-        type="text"
-        placeholder="Filtrar por nombre"
-        value={filter}
-        onChange={handleFilterChange}
-        aria-label="Filtrar usuarios por nombre"
-      />
-      
-      <button onClick={handleResetFilter}>Reset</button>
+    <div className="dashboard">
+      <div className="dashboard__container">
+        <header className="dashboard__header">
+          <h1 className="dashboard__title">Dashboard de usuarios</h1>
+          <p className="dashboard__subtitle">
+            Panel estilo SaaS con jerarquía clara: métricas arriba, controles al centro y resultados en una card
+            con densidad visual balanceada.
+          </p>
+        </header>
 
-      <p>Total caracteres en nombres: {totalNameLength}</p>
+        <section className="dashboard__metrics" aria-label="Métricas">
+          <div className="card metric">
+            <div className="metric__label">Contador</div>
+            <div className="metric__value">{counter}</div>
+            <div className="metric__hint">Feedback inmediato (microinteracción)</div>
+          </div>
 
-      {/* Lista de usuarios con React.memo implícito en el componente hijo */}
-      <ul>
-        {filteredUsers.map(user => (
-          <UserItem key={user.id} user={user} />
-        ))}
-      </ul>
+          <div className="card metric">
+            <div className="metric__label">Usuarios</div>
+            <div className="metric__value">
+              {visibleUsers}
+              <span className="metric__hint"> / {totalUsers}</span>
+            </div>
+            <div className="metric__hint">Resultados visibles vs. total</div>
+          </div>
 
-      {filteredUsers.length === 0 && (
-        <p>No se encontraron usuarios</p>
-      )}
+          <div className="card metric">
+            <div className="metric__label">Total caracteres (nombres)</div>
+            <div className="metric__value">{totalNameLength}</div>
+            <div className="metric__hint">Cálculo derivado (sin renders extra)</div>
+          </div>
+        </section>
+
+        <section className="card dashboard__controls" aria-label="Filtros">
+          <div className="card__header">
+            <h2 className="card__title">Filtros</h2>
+            <p className="card__subtitle">Búsqueda rápida con reset contextual.</p>
+          </div>
+          <div className="card__body">
+            <div className="filters">
+              <div className="filters__field">
+                <label className="filters__label" htmlFor="user-filter">
+                  Buscar por nombre
+                </label>
+                <input
+                  id="user-filter"
+                  className="input"
+                  type="search"
+                  placeholder="Ej. Leanne"
+                  value={filter}
+                  onChange={handleFilterChange}
+                  aria-label="Filtrar usuarios por nombre"
+                />
+              </div>
+
+              <button
+                className="button button--ghost"
+                onClick={handleResetFilter}
+                type="button"
+                disabled={!isFilterActive}
+              >
+                Reset
+              </button>
+
+              <button className="button button--primary" onClick={handleIncrementCounter} type="button">
+                +1 contador
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section className="card" aria-label="Usuarios">
+          <div className="card__header">
+            <h2 className="card__title">Usuarios</h2>
+            <p className="card__subtitle">
+              {isFilterActive ? `Mostrando ${visibleUsers} resultado(s) para “${filter.trim()}”.` : `Mostrando ${visibleUsers} usuario(s).`}
+            </p>
+          </div>
+
+          {visibleUsers > 0 ? (
+            <ul className="user-list" role="list">
+              {filteredUsers.map(user => (
+                <UserItem key={user.id} user={user} />
+              ))}
+            </ul>
+          ) : (
+            <div className="empty-state" role="status" aria-live="polite">
+              <p className="empty-state__title">No users found</p>
+              <p className="empty-state__message">
+                Prueba con otro término de búsqueda o limpia el filtro para volver a ver el listado completo.
+              </p>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 };
@@ -223,9 +413,16 @@ const handleResetFilter = useCallback(() => {
 // PROBLEMA DE RENDERING RESUELTO: Componente memoizado con tipos
 const UserItem: React.FC<{ user: User }> = React.memo(({ user }) => {
   console.log(`Renderizando: ${user.name}`);
+  const initial = user.name?.trim()?.[0]?.toUpperCase() ?? '?';
   return (
-    <li>
-      <strong>{user.name}</strong> - {user.email}
+    <li className="user-item">
+      <div className="user-item__avatar" aria-hidden="true">
+        {initial}
+      </div>
+      <div>
+        <div className="user-item__name">{user.name}</div>
+        <div className="user-item__email">{user.email}</div>
+      </div>
     </li>
   );
 });
